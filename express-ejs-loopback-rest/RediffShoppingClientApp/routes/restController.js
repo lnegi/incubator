@@ -85,6 +85,7 @@ var restModule = {
 				restModule.log('now executing the callback: ' + typeof cb);
 				restModule.log('req header' + newReq.getHeader('url'));
 				//restModule.log('newReq : ' + restModule.logObject(newReq.getHeader('referrer')	));
+				restModule.log('__inspector_url__'+newReq.__inspector_url__);
 				cb(chunk, newReq.__inspector_url__ || "no-url");
 			});
 			res.on('end', function(data) {

@@ -6,7 +6,9 @@ $(document).ready(function() {
 function searchFunctionality() {
 	var that = this;
 	var searchInput = $('#searchInput'),
+		searchBtn = $('#searchBtn'),
 		searchResultContainer = $('.search-results'),
+		historyContainer = $('.search-history-container'),
 		resContainer = searchResultContainer.parents('.res-container');
 	this.init = function() {
 		this.events();
@@ -23,6 +25,7 @@ function searchFunctionality() {
 		};
 		socket.emit('newloginInit', userData);
 
+		that.getSearchHistory();
 
 
 	};
@@ -33,12 +36,20 @@ function searchFunctionality() {
 
 
 	this.events = function() {
-		$('#searchBtn').on('click', function() {
+		searchBtn.on('click', function() {
 			var searchInputText = searchInput.val();
 			if (searchInputText && searchInputText.length > 3) {
 				that.searchRediff(searchInputText);
 			}
 		});
+		historyContainer.on('click','a', function(e){
+			e.preventDefault();
+			var text = $(this).text();
+			var searchString = text.substring(0,text.indexOf('--'));
+			searchInput.val(searchString);
+			searchBtn.trigger('click');
+		});
+
 	};
 	this.cleanup = function() {
 		resContainer.find('.items-found').remove();
@@ -79,7 +90,31 @@ function searchFunctionality() {
 
 		resContainer.prepend('<h3 class="col-xs-12 items-found">Found ' + itemsFound + ' items</h3>');
 
+		that.getSearchHistory();
 
+	};
+
+	this.getSearchHistory = function() {
+		$.ajax({
+			url: '/getSearchHistory',
+			method: 'get',
+			success: that.paintHistory,
+			error: function(xhr, opts) {
+				searchResultContainer.html('Sorry some error' + xhr);
+			}
+		});
+	};
+
+	this.paintHistory = function(data) {
+		var historyList = $('.search-history');
+		historyList.empty();
+		if (!data.history.length) {
+			historyList.append('<li class="list-group-item no-results">No recent searches</li>');
+
+		}
+		$.each(data.history, function(i, item) {
+			historyList.append('<li class="list-group-item"><a href="' + item.url + '">' + item.searchKey + '</a></li>');
+		});
 	};
 
 	this.getResultItemTemplate = function(item) {

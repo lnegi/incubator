@@ -18,6 +18,7 @@ a {
 }
 .list-group {
 	margin:10px 0 10px 15px;
+	display: inline-block;
 }
 .items-found {
 	margin-top:50px;

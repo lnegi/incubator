@@ -1,5 +1,7 @@
 module.exports = function(Shopper) {
+	var searchCache = {
 
+	};
 	Shopper.authenticate = function(username, password, cb) {
 		var accessToken = 'adfaseere33434343s434' + Math.random();
 		var filter = {
@@ -45,22 +47,29 @@ module.exports = function(Shopper) {
 	}
 	Shopper.searchRediff = function(searchString, cb) {
 
-		console.log('-------------searchRediff : ' + searchString);
+		if (searchCache[searchString]) {
+			cb(null, searchCache[searchString]);
+		} else {
 
-		var rediffService = Shopper.app.dataSources.RediffService;
 
-		rediffService.settings.operations[0].template.url = replaceSearchString(rediffService, searchString);
+			console.log('-------------searchRediff : ' + searchString);
 
-		console.log('-------------URL To be	 Hit : ' + rediffService.settings.operations[0].template.url);
+			var rediffService = Shopper.app.dataSources.RediffService;
 
-		rediffService.find(searchString, function(err, response, context) {
-			console.log('----------Inside Callback: error: ' + err + ' response :' + response);
-			if (err) {
-				response = [];
-			}
-			cb(null, response);
+			rediffService.settings.operations[0].template.url = replaceSearchString(rediffService, searchString);
 
-		});
+			console.log('-------------URL To be	 Hit : ' + rediffService.settings.operations[0].template.url);
+
+			rediffService.find(searchString, function(err, response, context) {
+				console.log('----------Inside Callback: error: ' + err + ' response :' + response);
+				if (err) {
+					response = [];
+				}
+				searchCache[searchString] = response;
+				cb(null, response);
+
+			});
+		}
 
 	};
 

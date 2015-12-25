@@ -2,56 +2,47 @@ var fs = require("fs");
 
 var fsModule = {};
 var filePath = 'public/searchHistory.txt';
-fsModule.writeToFile = function(searchId, url, cb) {
+fsModule.writeToFile = function(jsonString, cb) {
 	// Create a writable stream
-	var writerStream = fs.createWriteStream(filePath);
-	searchId =searchId + ' -- '+ new Date().toLocaleString();
-	var data = ',' + searchId + ':' + url;
 
-	console.log('Wrting to file : ' + searchId + " " + url + " " + data);
+	console.log('Wrting to file : ' + jsonString);
+	var writeCB = function(data) {
 
-	writerStream.write(data, 'UTF8');
+		var writerStream = fs.createWriteStream(filePath);
 
-	// Mark the end of file
-	writerStream.end();
+		jsonString = data + ','+jsonString;
+		writerStream.write(jsonString, 'UTF8');
 
-	// Handle stream events --> finish, and error
-	writerStream.on('finish', function() {
-		console.log("Write completed.");
-		cb();
+		// Mark the end of file
+		writerStream.end();
+
+		// Handle stream events --> finish, and error
+		writerStream.on('finish', function() {
+			console.log("Write completed.");
+			cb();
+		});
+
+		writerStream.on('error', function(err) {
+			console.log(err.stack);
+		});
+
+		console.log("Program Ended");
+	};
+	var data = "";
+	fs.readFile(filePath, {'encoding': 'utf8'}, function(err, data){
+		writeCB(data);
 	});
-
-	writerStream.on('error', function(err) {
-		console.log(err.stack);
-	});
-
-	console.log("Program Ended");
 };
 
 
-fsModule.readFromFile = function(searchId, cb) {
-	var readerStream = fs.createReadStream(filePath);
+fsModule.readFromFile = function( cb) {
 
-	// Set the encoding to be utf8. 
-	readerStream.setEncoding('UTF8');
-
-	// Handle stream events --> data, end, and error
-	readerStream.on('data', function(chunk) {
-		data += chunk;
-
+	fs.readFile(filePath, {'encoding': 'utf8'}, function(err, dataString){
+		if(dataString.indexOf(',') === 0 ){
+			dataString = dataString.substring(1);
+		}
+		cb(dataString);
 	});
-
-	readerStream.on('end', function() {
-		console.log(data);
-		var url = fsModule.getURLBasedOnId(data, searchId);
-		cb(url);
-	});
-
-	readerStream.on('error', function(err) {
-		console.log(err.stack);
-	});
-
-	console.log("Program Ended");
 
 };
 

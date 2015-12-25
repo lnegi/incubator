@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var io = require('socket.io');
 var http = require('http');
-
+var promise = require('express-promise');
 var routes = require('./routes/routes');
 
 var app = express();
@@ -22,6 +22,7 @@ app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(promise());
 
 
 var bodyParser = require('body-parser');

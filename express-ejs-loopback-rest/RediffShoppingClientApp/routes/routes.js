@@ -23,8 +23,12 @@ router.get('/searchProducts', function(req, res, next) {
 	restModule.log('Search String is: ' + searchString);
 
 	restModule.searchProducts(searchString, function(data, url) {
-        
-        fsModule.writeToFile(searchString,url, function(){
+		var writableJSON = {
+			searchKey: searchString + '--' + new Date().toLocaleString(),
+			url: url
+		};
+
+		fsModule.writeToFile(JSON.stringify(writableJSON), function() {
 			console.log('written', url);
 		});
 
@@ -124,8 +128,14 @@ router.post('/authenticate', function(req, res, next) {
 });
 
 
-router.get('/welcome', function(req, res, next) {
-
+router.get('/getSearchHistory', function(req, res, next) {
+	fsModule.readFromFile(function(str) {
+		var arrStr = '[' + str + ']';
+		var arr = JSON.parse(arrStr);
+		res.send({
+			history: arr || []
+		});
+	});
 });
 
 module.exports = router;
