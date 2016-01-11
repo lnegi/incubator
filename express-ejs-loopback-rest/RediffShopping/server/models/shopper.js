@@ -73,6 +73,35 @@ module.exports = function(Shopper) {
 
 	};
 
+	Shopper.removeUsers = function(username) {
+		Shopper.find(null, function(err, result) {
+			if (result && result.length) {
+
+				var matchedId = null;
+				result.map(function(item) {
+					if (item.__data.username === username) {
+						matchedId = item.__data.id;
+						return item;
+					}
+				});
+
+				if (matchedId) {
+					Shopper.deleteById(matchedId, function() {
+						return {
+							deleted: matchedId
+						}
+					});
+				} else {
+					Shopper.deleteAll(null, function() {
+						return {
+							deleted: 'all'
+						}
+					});
+				}
+			}
+		});
+	};
+
 	Shopper.remoteMethod(
 		'authenticate', {
 			http: {
@@ -101,6 +130,22 @@ module.exports = function(Shopper) {
 			},
 			accepts: [{
 				arg: 'searchString',
+				type: 'string'
+			}],
+			returns: {
+				root: 'true',
+				type: 'object'
+			}
+		});
+
+	Shopper.remoteMethod(
+		'removeUsers', {
+			http: {
+				path: '/removeUsers',
+				verb: 'DELETE'
+			},
+			accepts: [{
+				arg: 'username',
 				type: 'string'
 			}],
 			returns: {
