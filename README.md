@@ -9,23 +9,21 @@ products from Rediff site
 To get the local up & running , follow below steps
 
 * Mongodb 
-- install mongodb 
-- create a folder under data folder named loopbackdb or whatever you want
-- 
+    - install mongodb 
+    - create a folder under data folder named loopbackdb or whatever you want
+    - start the mongodb server using below command
+    - mongod --dbpath <path to the loopbackdb folder>
+* Loopback Server
+    - cd to RediffShopping folder
+    - run npm install
+    - run the server now using below command
+    - PORT=5555 node .
+* Start the express client application
+    - cd to RediffClient folder
+    - run npm install
+    - run the server using below command
+    - node app.js
 
+Now access your server using http://localhost:3006/
 
- 
-Profiles
---------
-
-The following Spring profiles are supported:
-
-* **admin** TBD
-* **mockjms** disables JMS for local testing
-* **endeca** enables Endeca for search
-* **mock** use mocks for local testing
-
-For production **endeca** has to be enabled!
-
-For local testing you can switch between common search mock by activating the **mock** profile or go deeper to an Endeca mock by
-activating both profiles **endeca** and **mock** at the same time.
+Loopback APIs can be seen non http://localhost:5555/explorer 
